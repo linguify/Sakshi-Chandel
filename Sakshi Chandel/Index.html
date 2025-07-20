@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday Sakshi!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Poppins:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #0a021a;
+            font-family: 'Poppins', sans-serif;
+        }
+        #three-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            outline: none;
+        }
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            pointer-events: none; /* Allows mouse events to pass through to the canvas */
+            color: white;
+        }
+        .title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(2rem, 10vw, 5rem);
+            font-weight: 700;
+            text-shadow: 0 0 10px #fff, 0 0 20px #ff00ff, 0 0 30px #ff00ff, 0 0 40px #00ffff, 0 0 50px #00ffff;
+            animation: flicker 1.5s infinite alternate;
+        }
+        .subtitle {
+            font-size: clamp(1rem, 5vw, 2.5rem);
+            margin-top: 1rem;
+            text-shadow: 0 0 5px #fff, 0 0 10px #00ffff;
+        }
+
+        @keyframes flicker {
+            0%, 18%, 22%, 25%, 53%, 57%, 100% {
+                text-shadow:
+                0 0 4px #fff,
+                0 0 11px #ff00ff,
+                0 0 19px #ff00ff,
+                0 0 40px #00ffff,
+                0 0 80px #00ffff;
+            }
+            20%, 24%, 55% {        
+                text-shadow: none;
+            }
+        }
+        .instructions {
+            position: fixed;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-900">
+
+    <!-- 3D Canvas -->
+    <canvas id="three-canvas"></canvas>
+
+    <!-- Overlay Content -->
+    <div class="overlay">
+        <h2 class="subtitle">Happy Birthday</h2>
+        <h1 class="title">SAKSHI CHANDEL</h1>
+    </div>
+    
+    <div class="instructions">
+        Click and drag to explore the scene!
+    </div>
+
+    <!-- Three.js and OrbitControls Script -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        // Scene, Camera, Renderer
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('three-canvas'), antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+
+        // Orbit Controls
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.minDistance = 5;
+        controls.maxDistance = 25;
+        controls.autoRotate = true;
+        controls.autoRotateSpeed = 0.5;
+
+        camera.position.z = 15;
+
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+        scene.add(ambientLight);
+
+        const pointLight = new THREE.PointLight(0xffffff, 1, 100);
+        pointLight.position.set(0, 5, 5);
+        scene.add(pointLight);
+
+        // --- Create Birthday Elements ---
+
+        // 1. Birthday Cake
+        const cakeGroup = new THREE.Group();
+        const bottomLayer = new THREE.Mesh(
+            new THREE.CylinderGeometry(3, 3, 1.5, 64),
+            new THREE.MeshStandardMaterial({ color: 0x8a2be2, roughness: 0.5 })
+        );
+        const topLayer = new THREE.Mesh(
+            new THREE.CylinderGeometry(2, 2, 1.5, 64),
+            new THREE.MeshStandardMaterial({ color: 0x4169e1, roughness: 0.5 })
+        );
+        topLayer.position.y = 1.5;
+        
+        // Neon Rings
+        const neonPink = new THREE.Mesh(
+            new THREE.TorusGeometry(3.05, 0.1, 16, 100),
+            new THREE.MeshStandardMaterial({ color: 0xff00ff, emissive: 0xff00ff, emissiveIntensity: 2 })
+        );
+        neonPink.rotation.x = Math.PI / 2;
+
+        const neonCyan = new THREE.Mesh(
+            new THREE.TorusGeometry(2.05, 0.1, 16, 100),
+            new THREE.MeshStandardMaterial({ color: 0x00ffff, emissive: 0x00ffff, emissiveIntensity: 2 })
+        );
+        neonCyan.rotation.x = Math.PI / 2;
+        neonCyan.position.y = 1.5;
+
+        cakeGroup.add(bottomLayer, topLayer, neonPink, neonCyan);
+        
+        // Candles
+        const candleMaterial = new THREE.MeshStandardMaterial({ color: 0xf0f0f0 });
+        const flameMaterial = new THREE.MeshBasicMaterial({ color: 0xffd700 });
+        for (let i = 0; i < 5; i++) {
+            const angle = (i / 5) * Math.PI * 2;
+            const candle = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.8, 8), candleMaterial);
+            const flame = new THREE.Mesh(new THREE.SphereGeometry(0.15, 8, 8), flameMaterial);
+            
+            candle.position.set(Math.cos(angle) * 1.2, 3, Math.sin(angle) * 1.2);
+            flame.position.y = 0.5;
+            candle.add(flame);
+            
+            const flameLight = new THREE.PointLight(0xffd700, 0.5, 5);
+            flameLight.position.y = 0.6;
+            candle.add(flameLight);
+            
+            cakeGroup.add(candle);
+        }
+        
+        cakeGroup.position.y = -2;
+        scene.add(cakeGroup);
+
+        // 2. Holographic Balloons
+        const balloons = [];
+        const balloonColors = [0xff00ff, 0x00ffff, 0x9d00ff];
+        for (let i = 0; i < 15; i++) {
+            const geometry = new THREE.SphereGeometry(1, 32, 32);
+            const material = new THREE.MeshStandardMaterial({
+                color: balloonColors[i % 3],
+                transparent: true,
+                opacity: 0.6,
+                metalness: 0.2,
+                roughness: 0.1,
+                emissive: balloonColors[i % 3],
+                emissiveIntensity: 0.2
+            });
+            const balloon = new THREE.Mesh(geometry, material);
+            
+            balloon.position.set(
+                (Math.random() - 0.5) * 30,
+                (Math.random() - 0.5) * 15 + 5,
+                (Math.random() - 0.5) * 20 - 5
+            );
+            
+            balloon.userData.velocity = new THREE.Vector3(0, Math.random() * 0.01 + 0.01, 0);
+            balloons.push(balloon);
+            scene.add(balloon);
+        }
+
+        // 3. Digital Confetti
+        const confettiParticles = 5000;
+        const positions = new Float32Array(confettiParticles * 3);
+        const colors = new Float32Array(confettiParticles * 3);
+        const confettiPalette = [new THREE.Color(0xff00ff), new THREE.Color(0x00ffff), new THREE.Color(0xffffff)];
+
+        for (let i = 0; i < positions.length; i += 3) {
+            positions[i] = (Math.random() - 0.5) * 40; // x
+            positions[i + 1] = Math.random() * 30;     // y
+            positions[i + 2] = (Math.random() - 0.5) * 40; // z
+            const color = confettiPalette[Math.floor(Math.random() * confettiPalette.length)];
+            colors[i] = color.r;
+            colors[i+1] = color.g;
+            colors[i+2] = color.b;
+        }
+
+        const confettiGeometry = new THREE.BufferGeometry();
+        confettiGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        confettiGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+        
+        const confettiMaterial = new THREE.PointsMaterial({
+            size: 0.1,
+            vertexColors: true,
+            blending: THREE.AdditiveBlending,
+            transparent: true,
+            opacity: 0.8
+        });
+
+        const confetti = new THREE.Points(confettiGeometry, confettiMaterial);
+        scene.add(confetti);
+
+        // 4. Starry Background
+        const starGeometry = new THREE.BufferGeometry();
+        const starPositions = [];
+        for (let i = 0; i < 10000; i++) {
+            const x = THREE.MathUtils.randFloatSpread(200);
+            const y = THREE.MathUtils.randFloatSpread(200);
+            const z = THREE.MathUtils.randFloatSpread(200);
+            starPositions.push(x, y, z);
+        }
+        starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starPositions, 3));
+        const starMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.1 });
+        const stars = new THREE.Points(starGeometry, starMaterial);
+        scene.add(stars);
+
+        // Handle Window Resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Animation Loop
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Animate balloons
+            balloons.forEach(b => {
+                b.position.add(b.userData.velocity);
+                if (b.position.y > 20) {
+                    b.position.y = -20;
+                }
+            });
+
+            // Animate confetti
+            const confPos = confetti.geometry.attributes.position;
+            for (let i = 0; i < confPos.count; i++) {
+                confPos.setY(i, confPos.getY(i) - 0.05);
+                if (confPos.getY(i) < -15) {
+                    confPos.setY(i, 15);
+                }
+            }
+            confPos.needsUpdate = true;
+            
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        animate();
+    </script>
+</body>
+</html>
